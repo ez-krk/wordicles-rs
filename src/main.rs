@@ -33,7 +33,7 @@ fn create_wordlist() -> Wordlist {
 
 fn count_wordlist(wordlist: &Wordlist) -> u64 {
     let mut i = 0;
-    for word in wordlist.words {
+    for word in &wordlist.words {
         println!("{word}");
         i = i +1
     };
@@ -41,10 +41,9 @@ fn count_wordlist(wordlist: &Wordlist) -> u64 {
 }
 
 #[derive(Debug)]
-struct Game { wordlist: Wordlist, words: u64, active: bool, created_at: SystemTime }
+struct Game<'a> { wordlist: &'a Wordlist, words: u64, active: bool, created_at: SystemTime }
 
 fn create_game(wordlist: &Wordlist) -> Game {
-    let wordlist: Wordlist = create_wordlist();
     let game = Game {
         wordlist: wordlist,
         words: count_wordlist(&wordlist),
@@ -55,8 +54,8 @@ fn create_game(wordlist: &Wordlist) -> Game {
 }
 
 #[derive(Debug)]
-struct Word {
-    wordlist: Wordlist,
+struct Word<'a> {
+    wordlist: &'a Wordlist,
     word: String,
     length: u64,
     rng: u64,
@@ -70,9 +69,9 @@ fn word_length(word : String) -> u64 {
 }
 
 
-fn new_word(secret_text: &String, game: &Game) -> Word {
+fn new_word<'a>(secret_text: &'a String, game: &'a Game) -> Word<'a> {
     let word = Word {
-        wordlist: game.wordlist,
+        wordlist: &game.wordlist,
         word: String::from(secret_text),
         length: word_length((&secret_text).to_string()),
         rng : range_rand(game.words),
